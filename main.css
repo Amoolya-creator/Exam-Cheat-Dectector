@@ -1,0 +1,26 @@
+body{
+background-image:repeating-linear-gradient(45deg,rgba(255, 0, 0, 0.4), rgba(255, 255, 0, 0.4), rgba(0, 128, 0, 0.4) , rgba(0, 0, 255, 0.4));
+}
+
+h1{font-size: 4em;
+    text-shadow :5px 5px 5px black;
+}
+
+.roll {
+    background-color: lightgreen;
+    border: 2px solid black;
+    border-radius: 10%;
+    box-shadow: 2px 2px 2px darkgreen;
+    padding-top: 5px;
+}
+
+#exam_room_layout{
+    background-image:url(exam_room.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-y: 45px; 
+}
+
+#Details{
+    display: none;
+}

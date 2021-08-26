@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Exam Cheat Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="d-flex">
+            <img class="m-3 border border-danger shadow" src="logo.jpg" width="100px" height="auto">
+            <h1 class="m-3 text-primary flex-fill text-center font-weight-bolder">Examination Cheat Detector</h1>
+        </div>
+        <div class="row">
+            <h5 class="mt-5 ">Please Enter:</h5>
+        </div>
+        <div class="row" id="firstRow">
+            <div class="col form-inline">
+                <label class="form-label col-form-label" for="no_of_students"> Total students: </label>
+                <input class="m-1 form-control shadow" name="no_of_students" id="no_of_students" min="1" max="999" value="1"
+                    required type="number" onchange="DisplayGrid()">
+            </div>
+            <div class="col form-inline">
+                <label class="form-label col-form-label" for="start_roll"> Start Roll No from:</label>
+                <input class="m-1 form-control shadow" name="start_roll" id="start_roll" min="1" max="1000" value="1" required
+                    type="number" onchange="DisplayGrid()">
+            </div>
+            <div class="col form-inline">
+                <label class="form-label col-form-label" for="no_of_cols"> No of Rows: </label>
+                <input class="m-1 form-control shadow" name="no_of_cols" id="no_of_cols" min="1" max="12" value="1" required
+                    type="number" onchange="DisplayGrid()">
+            </div>
+        </div>
+        <div class="row my-2 border border-dark shadow">
+            <div class="col p-3 bg-light text-info" data-toggle="modal" data-target="#myModal">Select Students Answer File:
+            </div>
+            <div class="col bg-success">
+                <input class="p-3" type="file" accept=".json" name="AnswerFile" id="AnswerFile"
+                    onchange="ReadJSON(this)">
+            </div>
+        </div>
+        <div class="row my-2 border border-dark shadow">
+            <div class="col p-3 bg-light text-info" data-toggle="modal" data-target="#myModal1">Select Answer-Key File:
+            </div>
+            <div class="col bg-success">
+                <input class="p-3" type="file" accept=".txt" name="AnswerKeyFile" id="AnswerKeyFile"
+                    onchange="Read(this)">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-4 col-sm-3 form-inline">
+                <label class="form-label col-form-label" for="cut_off">Cut_off value:&nbsp;
+                    <span id="cv">90</span></label></div>
+            <div class="col-lg-3 col-md-4 col-sm-6 offset-1 form-inline">
+                <input class="m-1 form-control-range" min=50 max=100 type="range" name="AnswerKeyFile" value=90
+                    id="cut_off" onchange="Modify()"></div>
+        </div>
+    </div>
+    <div class="container" id="exam_room_layout"></div>
+    <div id="Details" class="container">
+        <div class="row">
+            <button class="col-2 m-5  btn btn-primary" type="submit" data-toggle="modal"
+                data-target="#out">Details</button>
+        </div>
+        <!--Output Modal-->
+        <div id="out" class="modal">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <h4 class="modal-header text-info">
+                        <div class="modal-title">Highest Similarity Ratio
+                            <span>
+                                <h6 class="text-warning">This program calculates this value to spot cheaters.</h6>
+                            </span>
+                        </div>
+                        <button class="btn btn-danger" data-dismiss="modal">&times;</button>
+                    </h4>
+                    <div class="modal-body" id="output"></div>
+                    <div class="modal-footer">
+                        <p class="text-justify">Highest Similarity Ratio is the highest Similarity of answers
+                            between the student and among his / her adjoining-seated students. The higher
+                            the value, the higher chances of cheating between the students. However, meritorious
+                            students will also share a high score and comparison of answers with Answer key
+                            can possibily be helpful to remove the bias.
+                        </p>
+                        <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="text-center">
+        Cheaters are identified as increasing shades of
+        <span class="text-danger font-weight-bolder">RED.
+        </span>
+    </p>
+    <!--My Modal-->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <h4 class="modal-header text-info">Information
+                    <button class="btn btn-danger" data-dismiss="modal">&times;</button> </h4>
+                <div class="modal-body">
+                    <ol>A valid Student Answers Data File needs to be an Array of all Students with
+                        atleast the
+                        following fields:
+                        <ul><span class="font-weight-bolder">Roll</span></ul>
+                        <ul><span class="font-weight-bolder">Answers</span></ul>
+                    </ol>
+                    <ol><span class="font-weight-bolder">Answers</span> must contain a simple string, not as csv values.
+                        The values can be any
+                        single-character, however it must
+                        match with Answer key
+                    </ol>
+                    <ol>Eg:
+                        <ul>[{"Roll":"1","Name":"Anuranjan", "Answers":"111111111111111"},
+                            {"Roll":"2","Name":"Anu", "Answers":"222222222222222"},
+                            {"Roll":"3","Name":"Amoolya", "Answers":"333333333333333"}]</ul>
+                    </ol>
+                    <ol>Data file may contain data of students with Roll other than what is present in the examination
+                        hall.</ol>
+                    <ol>Even data may not be arranged Roll No wise</ol>
+                    <ol>However Absentees data must be present with Answer value as string with all zeroes like :
+                        00000000000000 </ol>
+                </div>
+                <div class="modal-footer"">
+                    <button class=" btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--My Modal1-->
+    <div class="modal fade" id="myModal1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <h4 class="modal-header text-info">Information
+                    <button class="btn btn-danger" data-dismiss="modal">&times;</button></h4>
+                <div class="modal-body">
+                    <p>A valid Student Answer Key Data File needs to be a simple string, not as csv values.</p>
+                    <p>Eg: 123412341234444</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--My Modal Error-->
+    <div class="modal fade" id="myModal2">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <h4 class="modal-header text-info">Error
+                    <button class="btn btn-danger" data-dismiss="modal">&times;</button></h4>
+                <div class="modal-body">
+                    <p>Incomplete or Invalid Data File.</p>
+                    <p>Please provide a complete valid File.
+                        Check File Requirements by clicking on "Select Students Answer File."</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+
+</body>
+
+</html>
